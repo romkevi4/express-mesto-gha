@@ -58,7 +58,7 @@ module.exports.updateUserData = (req, res) => {
   const { name, about } = req.body;
   const { _id } = req.user;
 
-  User.findByIdAndUpdate(_id, { name, about })
+  User.findByIdAndUpdate(_id, { name, about }, { new: true })
     .then(user => {
       if (!user) {
         res.status(ERROR_CODE.NOT_FOUND).send({ message: ERROR_MESSAGE.USER_NOT_FOUND });
@@ -82,7 +82,7 @@ module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
   const { _id } = req.user;
 
-  User.findByIdAndUpdate(_id, { avatar })
+  User.findByIdAndUpdate(_id, { avatar }, { new: true })
     .then(user => {
       if (!user) {
         res.status(ERROR_CODE.NOT_FOUND).send({ message: ERROR_MESSAGE.USER_NOT_FOUND });
