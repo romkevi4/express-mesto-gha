@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
+const { ERROR_CODE, ERROR_MESSAGE } = require('./utils/errorsInfo');
 
 const { PORT = 3000 } = process.env;
 
@@ -25,6 +26,12 @@ app.use((req, res, next) => {
 
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
+
+app.use((req, res, next) => {
+  res.status(ERROR_CODE.NOT_FOUND).send({ message: ERROR_MESSAGE.PATH_NOT_FOUND });
+
+  next();
+});
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
