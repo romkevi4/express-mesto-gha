@@ -58,7 +58,7 @@ module.exports.updateUserData = (req, res) => {
   const { name, about } = req.body;
   const { _id } = req.user;
 
-  User.findByIdAndUpdate(_id, { name, about }, { new: true })
+  User.findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
     .then(user => {
       if (!user) {
         res.status(ERROR_CODE.NOT_FOUND).send({ message: ERROR_MESSAGE.USER_NOT_FOUND });
