@@ -4,9 +4,8 @@ const {
   getUser,
   createUser,
   updateUserData,
-  updateUserAvatar
+  updateUserAvatar,
 } = require('../controllers/users');
-
 
 // Роутинг данных пользователя
 router.get('/', getUsers);

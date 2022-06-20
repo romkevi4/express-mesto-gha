@@ -4,7 +4,7 @@ const {
   createCard,
   deleteCard,
   addLikeCard,
-  removeLikeCard
+  removeLikeCard,
 } = require('../controllers/cards');
 
 // Роутинг данных карточки

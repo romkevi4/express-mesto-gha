@@ -24,7 +24,6 @@ module.exports.createCard = (req, res) => {
     .catch(err => {
       if (err.name === 'ValidationError') {
         res.status(ERROR_CODE.BAD_REQUEST).send({ message: ERROR_MESSAGE.ERROR_INCORRECT_DATA });
-
       } else {
         res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: err.message });
       }
@@ -47,7 +46,6 @@ module.exports.deleteCard = (req, res) => {
     .catch(err => {
       if (err.path === '_id') {
         res.status(ERROR_CODE.BAD_REQUEST).send({ message: ERROR_MESSAGE.ERROR_INCORRECT_ID });
-
       } else {
         res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: err.message });
       }
@@ -71,7 +69,6 @@ module.exports.addLikeCard = (req, res) => {
     .catch(err => {
       if (err.path === '_id') {
         res.status(ERROR_CODE.BAD_REQUEST).send({ message: ERROR_MESSAGE.ERROR_INCORRECT_ID });
-
       } else {
         res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: err.message });
       }
@@ -95,7 +92,6 @@ module.exports.removeLikeCard = (req, res) => {
     .catch(err => {
       if (err.path === '_id') {
         res.status(ERROR_CODE.BAD_REQUEST).send({ message: ERROR_MESSAGE.ERROR_INCORRECT_ID });
-
       } else {
         res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: err.message });
       }

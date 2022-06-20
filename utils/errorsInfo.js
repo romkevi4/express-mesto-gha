@@ -3,8 +3,8 @@ module.exports.ERROR_CODE = {
   CREATED: 201,
   BAD_REQUEST: 400,
   NOT_FOUND: 404,
-  INTERNAL_SERVER_ERROR: 500
-}
+  INTERNAL_SERVER_ERROR: 500,
+};
 
 module.exports.ERROR_MESSAGE = {
   USER_NOT_FOUND: 'Запрашиваемый пользователь не найден',
@@ -17,5 +17,5 @@ module.exports.ERROR_MESSAGE = {
   ERROR_REMOVE_LIKE: 'Переданные данные для снятия лайка не корректны',
   ERROR_INCORRECT_ID: 'Введённый id не корректен',
   ERROR_INCORRECT_DATA: 'Введённые данные не корректны',
-  PATH_NOT_FOUND: 'Запрашиваемый путь не найден'
-}
+  PATH_NOT_FOUND: 'Запрашиваемый путь не найден',
+};
