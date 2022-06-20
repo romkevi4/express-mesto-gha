@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/romkevi4/express-mesto-gha#readme",
   "devDependencies": {
-    "eslint": "^8.2.0",
+    "eslint": "^8.18.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.2",
     "nodemon": "^2.0.16"
