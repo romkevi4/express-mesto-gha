@@ -5,7 +5,7 @@ const { ERROR_CODE, ERROR_MESSAGE } = require('../utils/errorsInfo');
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then(cards => {
-      res.status(ERROR_CODE.OK).send({ data: cards });
+      res.send({ data: cards });
     })
     .catch(err => {
       res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: err.message });
@@ -42,7 +42,7 @@ module.exports.deleteCard = (req, res) => {
         return;
       }
 
-      res.status(ERROR_CODE.OK).send({ data: card });
+      res.send({ data: card });
     })
     .catch(err => {
       if (err.path === '_id') {
@@ -66,7 +66,7 @@ module.exports.addLikeCard = (req, res) => {
         return;
       }
 
-      res.status(ERROR_CODE.OK).send({ data: card });
+      res.send({ data: card });
     })
     .catch(err => {
       if (err.path === '_id') {
@@ -90,7 +90,7 @@ module.exports.removeLikeCard = (req, res) => {
         return;
       }
 
-      res.status(ERROR_CODE.OK).send({ data: card });
+      res.send({ data: card });
     })
     .catch(err => {
       if (err.path === '_id') {

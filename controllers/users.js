@@ -5,7 +5,7 @@ const { ERROR_CODE, ERROR_MESSAGE } = require('../utils/errorsInfo');
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then(users => {
-      res.status(ERROR_CODE.OK).send({ data: users });
+      res.send({ data: users });
     })
     .catch(err => {
       res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: err.message });
@@ -23,7 +23,7 @@ module.exports.getUser = (req, res) => {
         return;
       }
 
-      res.status(ERROR_CODE.OK).send({ data: user });
+      res.send({ data: user });
     })
     .catch(err => {
       if (err.path === '_id') {
@@ -65,7 +65,7 @@ module.exports.updateUserData = (req, res) => {
         return;
       }
 
-      res.status(ERROR_CODE.OK).send({ data: user });
+      res.send({ data: user });
     })
     .catch(err => {
       if (err.name === 'ValidationError') {
@@ -89,7 +89,7 @@ module.exports.updateUserAvatar = (req, res) => {
         return;
       }
 
-      res.status(ERROR_CODE.OK).send({ data: user });
+      res.send({ data: user });
     })
     .catch(err => {
       res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: err.message });
