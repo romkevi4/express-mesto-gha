@@ -1,13 +1,14 @@
 module.exports.ERROR_CODE = {
-  OK: 200,
   CREATED: 201,
   BAD_REQUEST: 400,
+  UNAUTHORIZED:401,
   NOT_FOUND: 404,
   INTERNAL_SERVER_ERROR: 500,
 };
 
 module.exports.ERROR_MESSAGE = {
   USER_NOT_FOUND: 'Запрашиваемый пользователь не найден',
+  USER_UNAUTHORIZED: 'Пользователь не авторизован, введенные почта или пароль неправильные',
   ERROR_CREATE_USER: 'Переданные данные для создания нового пользователя не корректны',
   ERROR_UPDATE_USER: 'Переданные данные профиля пользователя не корректны',
   ERROR_UPDATE_AVATAR: 'Переданные данные аватара пользователя не корректны',
@@ -18,4 +19,5 @@ module.exports.ERROR_MESSAGE = {
   ERROR_INCORRECT_ID: 'Введённый id не корректен',
   ERROR_INCORRECT_DATA: 'Введённые данные не корректны',
   PATH_NOT_FOUND: 'Запрашиваемый путь не найден',
+  CORRECT: 'Все верно',
 };

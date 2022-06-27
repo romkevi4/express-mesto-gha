@@ -4,11 +4,11 @@ const { ERROR_CODE, ERROR_MESSAGE } = require('../utils/errorsInfo');
 // Возвращение всех карточек
 module.exports.getCards = (req, res) => {
   Card.find({})
-    .then((cards) => {
-      res.send({ data: cards });
-    })
+    .then((cards) => res.send({ data: cards }))
     .catch((err) => {
-      res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: err.message });
+      res
+        .status(ERROR_CODE.INTERNAL_SERVER_ERROR)
+        .send({ message: err.message });
     });
 };
 
@@ -19,13 +19,19 @@ module.exports.createCard = (req, res) => {
 
   Card.create({ name, link, owner: _id })
     .then((card) => {
-      res.status(ERROR_CODE.CREATED).send({ data: card });
+      res
+        .status(ERROR_CODE.CREATED)
+        .send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE.BAD_REQUEST).send({ message: ERROR_MESSAGE.ERROR_INCORRECT_DATA });
+        res
+          .status(ERROR_CODE.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGE.ERROR_INCORRECT_DATA });
       } else {
-        res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: err.message });
+        res
+          .status(ERROR_CODE.INTERNAL_SERVER_ERROR)
+          .send({ message: err.message });
       }
     });
 };
@@ -37,7 +43,9 @@ module.exports.deleteCard = (req, res) => {
   Card.findByIdAndDelete(cardId)
     .then((card) => {
       if (!card) {
-        res.status(ERROR_CODE.NOT_FOUND).send({ message: ERROR_MESSAGE.CARD_NOT_FOUND });
+        res
+          .status(ERROR_CODE.NOT_FOUND)
+          .send({ message: ERROR_MESSAGE.CARD_NOT_FOUND });
         return;
       }
 
@@ -45,9 +53,13 @@ module.exports.deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.path === '_id') {
-        res.status(ERROR_CODE.BAD_REQUEST).send({ message: ERROR_MESSAGE.ERROR_INCORRECT_ID });
+        res
+          .status(ERROR_CODE.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGE.ERROR_INCORRECT_ID });
       } else {
-        res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: err.message });
+        res
+          .status(ERROR_CODE.INTERNAL_SERVER_ERROR)
+          .send({ message: err.message });
       }
     });
 };
@@ -60,7 +72,9 @@ module.exports.addLikeCard = (req, res) => {
   Card.findByIdAndUpdate(cardId, { $addToSet: { likes: _id } }, { new: true })
     .then((card) => {
       if (!card) {
-        res.status(ERROR_CODE.NOT_FOUND).send({ message: ERROR_MESSAGE.CARD_NOT_FOUND });
+        res
+          .status(ERROR_CODE.NOT_FOUND)
+          .send({ message: ERROR_MESSAGE.CARD_NOT_FOUND });
         return;
       }
 
@@ -68,9 +82,13 @@ module.exports.addLikeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.path === '_id') {
-        res.status(ERROR_CODE.BAD_REQUEST).send({ message: ERROR_MESSAGE.ERROR_INCORRECT_ID });
+        res
+          .status(ERROR_CODE.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGE.ERROR_INCORRECT_ID });
       } else {
-        res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: err.message });
+        res
+          .status(ERROR_CODE.INTERNAL_SERVER_ERROR)
+          .send({ message: err.message });
       }
     });
 };
@@ -83,7 +101,9 @@ module.exports.removeLikeCard = (req, res) => {
   Card.findByIdAndUpdate(cardId, { $pull: { likes: _id } }, { new: true })
     .then((card) => {
       if (!card) {
-        res.status(ERROR_CODE.NOT_FOUND).send({ message: ERROR_MESSAGE.CARD_NOT_FOUND });
+        res
+          .status(ERROR_CODE.NOT_FOUND)
+          .send({ message: ERROR_MESSAGE.CARD_NOT_FOUND });
         return;
       }
 
@@ -91,9 +111,13 @@ module.exports.removeLikeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.path === '_id') {
-        res.status(ERROR_CODE.BAD_REQUEST).send({ message: ERROR_MESSAGE.ERROR_INCORRECT_ID });
+        res
+          .status(ERROR_CODE.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGE.ERROR_INCORRECT_ID });
       } else {
-        res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: err.message });
+        res
+          .status(ERROR_CODE.INTERNAL_SERVER_ERROR)
+          .send({ message: err.message });
       }
     });
 };
