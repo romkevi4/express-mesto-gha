@@ -1,7 +1,7 @@
 const Card = require('../models/card');
 const { STATUS_CODE, MESSAGE } = require('../utils/errorsInfo');
-const BadRequestError = require("../errors/badRequestErr");
-const NotFoundError = require("../errors/notFoundErr");
+const BadRequestError = require('../errors/badRequestErr');
+const NotFoundError = require('../errors/notFoundErr');
 
 // Возвращение всех карточек
 module.exports.getCards = (req, res, next) => {
@@ -22,9 +22,11 @@ module.exports.createCard = (req, res, next) => {
         .send({ data: card });
     })
     .catch((err) => {
-      err.name === 'ValidationError'
-        ? next(new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA))
-        : next(err);
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -41,9 +43,11 @@ module.exports.deleteCard = (req, res, next) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      err.path === '_id'
-        ? next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID))
-        : next(err);
+      if (err.path === '_id') {
+        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -61,9 +65,11 @@ module.exports.addLikeCard = (req, res, next) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      err.path === '_id'
-        ? next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID))
-        : next(err);
+      if (err.path === '_id') {
+        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -81,8 +87,10 @@ module.exports.removeLikeCard = (req, res, next) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      err.path === '_id'
-        ? next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID))
-        : next(err);
+      if (err.path === '_id') {
+        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID));
+      } else {
+        next(err);
+      }
     });
 };

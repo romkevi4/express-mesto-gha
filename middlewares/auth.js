@@ -1,13 +1,13 @@
 const jwt = require('jsonwebtoken');
-const { STATUS_CODE, MESSAGE } = require('../utils/errorsInfo');
+const { MESSAGE } = require('../utils/errorsInfo');
+const BadRequestError = require('../errors/badRequestErr');
 
+// eslint-disable-next-line consistent-return
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return res
-      .status(STATUS_CODE.UNAUTHORIZED)
-      .send({ message: MESSAGE.USER_UNAUTHORIZED });
+    return new BadRequestError(MESSAGE.USER_UNAUTHORIZED);
   }
 
   const token = authorization.replace('Bearer ', '');
@@ -16,9 +16,7 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, 'some-secret-key');
   } catch (err) {
-    return res
-      .status(STATUS_CODE.UNAUTHORIZED)
-      .send({ message: MESSAGE.USER_UNAUTHORIZED });
+    return new BadRequestError(MESSAGE.USER_UNAUTHORIZED);
   }
 
   req.user = payload;

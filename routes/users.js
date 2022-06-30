@@ -7,7 +7,7 @@ const {
   getUserData,
   updateUserData,
   updateUserAvatar,
-} = require('../controllers/users')
+} = require('../controllers/users');
 const { urlRegex } = require('../utils/urlRegex');
 
 // Роутинг данных пользователя
@@ -37,7 +37,8 @@ router.patch('/me', celebrate({
 
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(urlRegex),
+    avatar: Joi.string()
+      .pattern(urlRegex),
   }),
 }), updateUserAvatar);
 

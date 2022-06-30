@@ -18,7 +18,7 @@ module.exports.getUsers = (req, res, next) => {
         throw new InternalServerError(MESSAGE.SERVER_ERROR);
       }
 
-      res.send({ data: users })
+      res.send({ data: users });
     })
     .catch(next);
 };
@@ -36,9 +36,11 @@ module.exports.getUser = (req, res, next) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      err.path === '_id'
-        ? next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID))
-        : next(err);
+      if (err.path === '_id') {
+        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -59,21 +61,31 @@ module.exports.getUserData = (req, res, next) => {
 
 // Создание пользователя
 module.exports.createUser = (req, res, next) => {
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
 
   bcrypt.hash(password, 10)
-    .then((hash) => User.create({ name, about, avatar, email, password: hash }))
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
     .then((user) => {
       res
         .status(STATUS_CODE.CREATED)
         .send({ data: user });
     })
     .catch((err) => {
-      const { code, name } = err;
-
-      if (code === 11000) {
+      if (err.code === 11000) {
         next(new ConflictError(MESSAGE.ERROR_DUPLICATE_EMAIL_USER));
-      } else if (name === 'ValidationError') {
+      } else if (err.name === 'ValidationError') {
         next(new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA));
       } else {
         next(err);
@@ -90,7 +102,7 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign(
         { _id: user._id },
         'some-secret-key',
-        { expiresIn: '7d' }
+        { expiresIn: '7d' },
       );
 
       if (!token) {
@@ -101,7 +113,7 @@ module.exports.login = (req, res, next) => {
       res
         .cookie('jwt', token, {
           maxAge: 3600000 * 24 * 7,
-          httpOnly: true
+          httpOnly: true,
         })
         .end();
     })
@@ -122,9 +134,11 @@ module.exports.updateUserData = (req, res, next) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      err.name === 'ValidationError'
-        ? next(new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA))
-        : next(err);
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA));
+      } else {
+        next(err);
+      }
     });
 };
 
