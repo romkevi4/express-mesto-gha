@@ -1,123 +1,88 @@
 const Card = require('../models/card');
-const { ERROR_CODE, ERROR_MESSAGE } = require('../utils/errorsInfo');
+const { STATUS_CODE, MESSAGE } = require('../utils/errorsInfo');
+const BadRequestError = require("../errors/badRequestErr");
+const NotFoundError = require("../errors/notFoundErr");
 
 // Возвращение всех карточек
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => {
-      res
-        .status(ERROR_CODE.INTERNAL_SERVER_ERROR)
-        .send({ message: err.message });
-    });
+    .catch(next);
 };
 
 // Создание карточки
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const { _id } = req.user;
 
   Card.create({ name, link, owner: _id })
     .then((card) => {
       res
-        .status(ERROR_CODE.CREATED)
+        .status(STATUS_CODE.CREATED)
         .send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res
-          .status(ERROR_CODE.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGE.ERROR_INCORRECT_DATA });
-      } else {
-        res
-          .status(ERROR_CODE.INTERNAL_SERVER_ERROR)
-          .send({ message: err.message });
-      }
+      err.name === 'ValidationError'
+        ? next(new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA))
+        : next(err);
     });
 };
 
 // Удаление карточки
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findByIdAndDelete(cardId)
     .then((card) => {
       if (!card) {
-        res
-          .status(ERROR_CODE.NOT_FOUND)
-          .send({ message: ERROR_MESSAGE.CARD_NOT_FOUND });
-        return;
+        throw new NotFoundError(MESSAGE.CARD_NOT_FOUND);
       }
 
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.path === '_id') {
-        res
-          .status(ERROR_CODE.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGE.ERROR_INCORRECT_ID });
-      } else {
-        res
-          .status(ERROR_CODE.INTERNAL_SERVER_ERROR)
-          .send({ message: err.message });
-      }
+      err.path === '_id'
+        ? next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID))
+        : next(err);
     });
 };
 
 // Добавление лайка карточке
-module.exports.addLikeCard = (req, res) => {
+module.exports.addLikeCard = (req, res, next) => {
   const { _id } = req.user;
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(cardId, { $addToSet: { likes: _id } }, { new: true })
     .then((card) => {
       if (!card) {
-        res
-          .status(ERROR_CODE.NOT_FOUND)
-          .send({ message: ERROR_MESSAGE.CARD_NOT_FOUND });
-        return;
+        throw new NotFoundError(MESSAGE.CARD_NOT_FOUND);
       }
 
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.path === '_id') {
-        res
-          .status(ERROR_CODE.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGE.ERROR_INCORRECT_ID });
-      } else {
-        res
-          .status(ERROR_CODE.INTERNAL_SERVER_ERROR)
-          .send({ message: err.message });
-      }
+      err.path === '_id'
+        ? next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID))
+        : next(err);
     });
 };
 
 // Удаление лайка у карточки
-module.exports.removeLikeCard = (req, res) => {
+module.exports.removeLikeCard = (req, res, next) => {
   const { _id } = req.user;
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(cardId, { $pull: { likes: _id } }, { new: true })
     .then((card) => {
       if (!card) {
-        res
-          .status(ERROR_CODE.NOT_FOUND)
-          .send({ message: ERROR_MESSAGE.CARD_NOT_FOUND });
-        return;
+        throw new NotFoundError(MESSAGE.CARD_NOT_FOUND);
       }
 
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.path === '_id') {
-        res
-          .status(ERROR_CODE.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGE.ERROR_INCORRECT_ID });
-      } else {
-        res
-          .status(ERROR_CODE.INTERNAL_SERVER_ERROR)
-          .send({ message: err.message });
-      }
+      err.path === '_id'
+        ? next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID))
+        : next(err);
     });
 };
