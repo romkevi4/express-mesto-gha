@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
-const { STATUS_CODE, MESSAGE } = require('../utils/errorsInfo');
+const { STATUS_CODE, MESSAGE, MONGO_CODE, SALT_HASH } = require('../utils/errorsInfo');
 const BadRequestError = require('../errors/badRequestErr');
 const UnauthorizedError = require('../errors/unauthorizedErr');
 const NotFoundError = require('../errors/notFoundErr');
@@ -37,18 +37,19 @@ module.exports.getUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.path === '_id') {
-        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID));
+        throw new BadRequestError(MESSAGE.ERROR_INCORRECT_ID);
       } else {
         next(err);
       }
-    });
+    })
+    .catch(next);
 };
 
 // Получение данных о пользователе
 module.exports.getUserData = (req, res, next) => {
-  const { name, about, avatar } = req.body;
+  const { _id } = req.user;
 
-  User.findOne({ name, about, avatar })
+  User.findById(_id)
     .then((user) => {
       if (!user) {
         throw new NotFoundError(MESSAGE.USER_NOT_FOUND);
@@ -69,28 +70,39 @@ module.exports.createUser = (req, res, next) => {
     password,
   } = req.body;
 
-  bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    }))
+  bcrypt.hash(password, SALT_HASH.ROUNDS)
+    .then((hash) => {
+      return User.create({
+        name,
+        about,
+        avatar,
+        email,
+        password: hash,
+      });
+    })
     .then((user) => {
       res
         .status(STATUS_CODE.CREATED)
-        .send({ data: user });
+        .send({
+          data: {
+            name: user.name,
+            about: user.about,
+            avatar: user.avatar,
+            email: user.email,
+            _id: user._id,
+          }
+        });
     })
     .catch((err) => {
-      if (err.code === 11000) {
-        next(new ConflictError(MESSAGE.ERROR_DUPLICATE_EMAIL_USER));
+      if (err.code === MONGO_CODE.ERROR_DUPLICATE) {
+        throw new ConflictError(MESSAGE.ERROR_DUPLICATE_EMAIL_USER);
       } else if (err.name === 'ValidationError') {
-        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA));
+        throw new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA);
       } else {
         next(err);
       }
-    });
+    })
+    .catch(next);
 };
 
 // Проверка логина и пароля
@@ -106,16 +118,15 @@ module.exports.login = (req, res, next) => {
       );
 
       if (!token) {
-        throw new UnauthorizedError(MESSAGE.USER_UNAUTHORIZED);
+        throw new UnauthorizedError(MESSAGE.DATA_UNAUTHORIZED);
       }
 
-      res.send({ data: token });
+      res.send({ token });
       res
         .cookie('jwt', token, {
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
-        })
-        .end();
+        });
     })
     .catch(next);
 };
@@ -135,11 +146,12 @@ module.exports.updateUserData = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA));
+        throw new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA);
       } else {
         next(err);
       }
-    });
+    })
+    .catch(next);
 };
 
 // Обновление аватара
@@ -147,7 +159,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   const { _id } = req.user;
 
-  User.findByIdAndUpdate(_id, { avatar }, { new: true })
+  User.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
         throw new NotFoundError(MESSAGE.USER_NOT_FOUND);

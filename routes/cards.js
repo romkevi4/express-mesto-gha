@@ -8,26 +8,29 @@ const {
   addLikeCard,
   removeLikeCard,
 } = require('../controllers/cards');
-const { imageRegex } = require('../utils/imageRegex');
+const { urlRegex } = require('../utils/urlRegex');
 
 // Роутинг данных карточки
 router.get('/', getCards);
 
 router.post('/', celebrate({
   body: Joi.object().keys({
-    name: Joi.string()
+    name: Joi
+      .string()
       .min(2)
       .max(30)
       .required(),
-    link: Joi.string()
-      .pattern(imageRegex)
+    link: Joi
+      .string()
+      .pattern(urlRegex)
       .required(),
   }),
 }), createCard);
 
 router.delete('/:cardId', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string()
+    cardId: Joi
+      .string()
       .alphanum()
       .length(24)
       .hex()
@@ -37,7 +40,8 @@ router.delete('/:cardId', celebrate({
 
 router.put('/:cardId/likes', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string()
+    cardId: Joi
+      .string()
       .alphanum()
       .length(24)
       .hex()
@@ -47,7 +51,8 @@ router.put('/:cardId/likes', celebrate({
 
 router.delete('/:cardId/likes', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string()
+    cardId: Joi
+      .string()
       .alphanum()
       .length(24)
       .hex()

@@ -2,11 +2,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { celebrate, Joi } = require('celebrate');
+const helmet = require('helmet');
 
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const { createUser, login } = require('./controllers/users');
-const auth = require('./middlewares/auth');
+const { auth } = require('./middlewares/auth');
 const { urlRegex } = require('./utils/urlRegex');
 
 const { STATUS_CODE, MESSAGE } = require('./utils/errorsInfo');
@@ -21,30 +22,40 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(helmet());
+
 app.post('/signup', celebrate({
   body: Joi.object().keys({
-    name: Joi.string()
+    name: Joi
+      .string()
       .min(2)
       .max(30),
-    about: Joi.string()
+    about: Joi
+      .string()
       .min(2)
       .max(30),
-    avatar: Joi.string()
+    avatar: Joi
+      .string()
       .pattern(urlRegex),
-    email: Joi.string()
+    email: Joi
+      .string()
       .email()
       .required(),
-    password: Joi.string()
+    password: Joi
+      .string()
+      .min(8)
       .required(),
   }),
 }), createUser);
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
-    email: Joi.string()
+    email: Joi
+      .string()
       .email()
       .required(),
-    password: Joi.string()
+    password: Joi
+      .string()
       .required(),
   }),
 }), login);
@@ -68,6 +79,8 @@ app.use((err, req, res, next) => {
         ? MESSAGE.SERVER_ERROR
         : message,
     });
+
+  next();
 });
 
 app.listen(PORT);

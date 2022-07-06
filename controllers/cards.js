@@ -23,11 +23,12 @@ module.exports.createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA));
+        throw new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA);
       } else {
         next(err);
       }
-    });
+    })
+    .catch(next);
 };
 
 // Удаление карточки
@@ -44,11 +45,12 @@ module.exports.deleteCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.path === '_id') {
-        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID));
+        throw new BadRequestError(MESSAGE.ERROR_INCORRECT_ID);
       } else {
         next(err);
       }
-    });
+    })
+    .catch(next);
 };
 
 // Добавление лайка карточке
@@ -66,11 +68,12 @@ module.exports.addLikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.path === '_id') {
-        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID));
+        throw new BadRequestError(MESSAGE.ERROR_INCORRECT_ID);
       } else {
         next(err);
       }
-    });
+    })
+    .catch(next);
 };
 
 // Удаление лайка у карточки
@@ -88,9 +91,10 @@ module.exports.removeLikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.path === '_id') {
-        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID));
+        throw new BadRequestError(MESSAGE.ERROR_INCORRECT_ID);
       } else {
         next(err);
       }
-    });
+    })
+    .catch(next);
 };
