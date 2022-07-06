@@ -3,7 +3,12 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
-const { STATUS_CODE, MESSAGE, MONGO_CODE, SALT_HASH } = require('../utils/errorsInfo');
+const {
+  STATUS_CODE,
+  MESSAGE,
+  MONGO_CODE,
+  SALT_HASH,
+} = require('../utils/errorsInfo');
 const BadRequestError = require('../errors/badRequestErr');
 const UnauthorizedError = require('../errors/unauthorizedErr');
 const NotFoundError = require('../errors/notFoundErr');
@@ -71,15 +76,13 @@ module.exports.createUser = (req, res, next) => {
   } = req.body;
 
   bcrypt.hash(password, SALT_HASH.ROUNDS)
-    .then((hash) => {
-      return User.create({
-        name,
-        about,
-        avatar,
-        email,
-        password: hash,
-      });
-    })
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
     .then((user) => {
       res
         .status(STATUS_CODE.CREATED)
@@ -90,7 +93,7 @@ module.exports.createUser = (req, res, next) => {
             avatar: user.avatar,
             email: user.email,
             _id: user._id,
-          }
+          },
         });
     })
     .catch((err) => {

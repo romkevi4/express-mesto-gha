@@ -23,11 +23,11 @@ const cardSchema = new mongoose.Schema({
       ref: 'user',
       default: [],
       required: true,
-    }
+    },
   ],
   createdAt: {
     type: Date,
-    default: Date.now ,
+    default: Date.now,
   },
 });
 
