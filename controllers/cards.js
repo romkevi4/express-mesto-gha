@@ -41,15 +41,13 @@ module.exports.deleteCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         throw new NotFoundError(MESSAGE.CARD_NOT_FOUND);
-      }
-
-      if (_id !== card.owner._id) {
+      } else if (_id !== card.owner._id) {
         throw new ForbiddenError(MESSAGE.ERROR_DELETE_CARD);
+      } else {
+        res
+          .status(STATUS_CODE.OK)
+          .send({ data: card });
       }
-
-      res
-        .status(STATUS_CODE.OK)
-        .send({ data: card });
     })
     .catch((err) => {
       if (err.path === '_id') {
