@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 const helmet = require('helmet');
 
 const usersRouter = require('./routes/users');
@@ -68,6 +68,8 @@ app.use('/cards', cardsRouter);
 app.use((req, res, next) => {
   next(new NotFoundError(MESSAGE.PATH_NOT_FOUND));
 });
+
+app.use(errors());
 
 app.use((err, req, res, next) => {
   const { statusCode = STATUS_CODE.INTERNAL_SERVER_ERROR, message } = err;
