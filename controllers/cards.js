@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const { STATUS_CODE, MESSAGE } = require('../utils/errorsInfo');
 const BadRequestError = require('../errors/badRequestErr');
+const ForbiddenError = require('../errors/forbiddenErr');
 const NotFoundError = require('../errors/notFoundErr');
 
 // Возвращение всех карточек
@@ -39,6 +40,10 @@ module.exports.deleteCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         throw new NotFoundError(MESSAGE.CARD_NOT_FOUND);
+      }
+
+      if (req.user._id !== card.owner._id) {
+        throw new ForbiddenError(MESSAGE.ERROR_DELETE_CARD);
       }
 
       res.send({ data: card });
