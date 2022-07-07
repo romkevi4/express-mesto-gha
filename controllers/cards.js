@@ -38,7 +38,7 @@ module.exports.deleteCard = (req, res, next) => {
 
   Card.findOne({ cardId })
     .then((card) => {
-      if (!card) {
+      if (!card || !cardId) {
         throw new NotFoundError(MESSAGE.CARD_NOT_FOUND);
       } else if (_id === card.owner._id.toString()) {
         Card.findByIdAndDelete(cardId)
