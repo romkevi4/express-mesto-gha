@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const isURL = require('validator/lib/isURL');
+
+const { MESSAGE } = require('../utils/errorsInfo');
 
 // Схема для данных карточки
 const cardSchema = new mongoose.Schema({
@@ -10,6 +13,12 @@ const cardSchema = new mongoose.Schema({
   },
   link: {
     type: String,
+    validate: {
+      validator(url) {
+        return isURL(url);
+      },
+      message: MESSAGE.URL_INCORRECT,
+    },
     required: true,
   },
   owner: {

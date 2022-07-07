@@ -18,11 +18,7 @@ const ConflictError = require('../errors/conflictErr');
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => {
-      if (!users) {
-        res.send({ data: [] });
-      } else {
-        res.send({ data: users });
-      }
+      res.send({ users });
     })
     .catch(next);
 };
