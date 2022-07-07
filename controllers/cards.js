@@ -52,7 +52,7 @@ module.exports.deleteCard = (req, res, next) => {
       }
     })
     .catch((err) => {
-      if (err.path === '_id' || err.name === 'CastError' || cardId) {
+      if (err.path === '_id' || err.name === 'CastError') {
         next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID));
       } else {
         next(err);
