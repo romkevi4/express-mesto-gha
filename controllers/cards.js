@@ -24,12 +24,11 @@ module.exports.createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA);
+        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA));
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 // Удаление карточки
@@ -37,32 +36,34 @@ module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   const { _id } = req.user;
 
-  Card.findByIdAndDelete(cardId)
+  Card.findOne({ cardId })
     .then((card) => {
-      if (!card) {
+      if (_id === card.owner._id.toString()) {
+        Card.findByIdAndDelete(cardId)
+          .then(() => {
+            res
+              .status(STATUS_CODE.OK)
+              .send({ data: card });
+          });
+      } else if (!card) {
         throw new NotFoundError(MESSAGE.CARD_NOT_FOUND);
-      } else if (_id !== card.owner._id.toString()) {
-        throw new ForbiddenError(MESSAGE.ERROR_DELETE_CARD);
       } else {
-        res
-          .status(STATUS_CODE.OK)
-          .send({ data: card });
+        throw new ForbiddenError(MESSAGE.ERROR_DELETE_CARD);
       }
     })
     .catch((err) => {
-      if (err.path === '_id') {
-        throw new BadRequestError(MESSAGE.ERROR_INCORRECT_ID);
+      if (err.path === '_id' || err.name === 'CastError') {
+        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID));
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 // Добавление лайка карточке
 module.exports.addLikeCard = (req, res, next) => {
-  const { _id } = req.user;
   const { cardId } = req.params;
+  const { _id } = req.user;
 
   Card.findByIdAndUpdate(cardId, { $addToSet: { likes: _id } }, { new: true })
     .then((card) => {
@@ -74,18 +75,17 @@ module.exports.addLikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.path === '_id') {
-        throw new BadRequestError(MESSAGE.ERROR_INCORRECT_ID);
+        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID));
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 // Удаление лайка у карточки
 module.exports.removeLikeCard = (req, res, next) => {
-  const { _id } = req.user;
   const { cardId } = req.params;
+  const { _id } = req.user;
 
   Card.findByIdAndUpdate(cardId, { $pull: { likes: _id } }, { new: true })
     .then((card) => {
@@ -97,10 +97,9 @@ module.exports.removeLikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.path === '_id') {
-        throw new BadRequestError(MESSAGE.ERROR_INCORRECT_ID);
+        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID));
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };

@@ -13,17 +13,16 @@ const BadRequestError = require('../errors/badRequestErr');
 const UnauthorizedError = require('../errors/unauthorizedErr');
 const NotFoundError = require('../errors/notFoundErr');
 const ConflictError = require('../errors/conflictErr');
-const InternalServerError = require('../errors/internalServerErr');
 
 // Возвращение всех пользователей
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => {
       if (!users) {
-        throw new InternalServerError(MESSAGE.SERVER_ERROR);
+        res.send({ data: [] });
+      } else {
+        res.send({ data: users });
       }
-
-      res.send({ data: users });
     })
     .catch(next);
 };
@@ -41,13 +40,12 @@ module.exports.getUser = (req, res, next) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.path === '_id') {
-        throw new BadRequestError(MESSAGE.ERROR_INCORRECT_ID);
+      if (err.path === '_id' || err.name === 'CastError') {
+        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_ID));
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 // Получение данных о пользователе
@@ -75,37 +73,43 @@ module.exports.createUser = (req, res, next) => {
     password,
   } = req.body;
 
-  bcrypt.hash(password, SALT_HASH.ROUNDS)
-    .then((hash) => User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    }))
-    .then((user) => {
-      res
-        .status(STATUS_CODE.CREATED)
-        .send({
-          data: {
-            name: user.name,
-            about: user.about,
-            avatar: user.avatar,
-            email: user.email,
-            _id: user._id,
-          },
-        });
+  User.findOne({ email })
+    .then((userSaved) => {
+      if (!userSaved) {
+        bcrypt.hash(password, SALT_HASH.ROUNDS)
+          .then((hash) => User.create({
+            name,
+            about,
+            avatar,
+            email,
+            password: hash,
+          }))
+          .then((user) => {
+            res
+              .status(STATUS_CODE.CREATED)
+              .send({
+                data: {
+                  name: user.name,
+                  about: user.about,
+                  avatar: user.avatar,
+                  email: user.email,
+                  _id: user._id,
+                },
+              });
+          });
+      } else {
+        throw new ConflictError(MESSAGE.ERROR_DUPLICATE_EMAIL_USER);
+      }
     })
     .catch((err) => {
       if (err.code === MONGO_CODE.ERROR_DUPLICATE) {
-        throw new ConflictError(MESSAGE.ERROR_DUPLICATE_EMAIL_USER);
+        next(new ConflictError(MESSAGE.ERROR_DUPLICATE_EMAIL_USER));
       } else if (err.name === 'ValidationError') {
-        throw new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA);
+        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA));
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 // Проверка логина и пароля
@@ -124,12 +128,12 @@ module.exports.login = (req, res, next) => {
         throw new UnauthorizedError(MESSAGE.DATA_UNAUTHORIZED);
       }
 
-      res.send({ token });
       res
         .cookie('jwt', token, {
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
-        });
+        })
+        .send({ token });
     })
     .catch(next);
 };
@@ -149,12 +153,11 @@ module.exports.updateUserData = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA);
+        next(new BadRequestError(MESSAGE.ERROR_INCORRECT_DATA));
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 // Обновление аватара
