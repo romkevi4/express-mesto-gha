@@ -6,10 +6,13 @@ const helmet = require('helmet');
 
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
-const { createUser, login } = require('./controllers/users');
-const { auth } = require('./middlewares/auth');
-const { urlRegex } = require('./utils/urlRegex');
 
+const { createUser, login } = require('./controllers/users');
+
+const { auth } = require('./middlewares/auth')
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+
+const { urlRegex } = require('./utils/urlRegex');
 const { STATUS_CODE, MESSAGE } = require('./utils/errorsInfo');
 const NotFoundError = require('./errors/notFoundErr');
 
@@ -23,6 +26,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(helmet());
+
+app.use(requestLogger);
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -63,6 +68,8 @@ app.use(auth);
 
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
+
+app.use(errorLogger);
 
 app.use((req, res, next) => {
   next(new NotFoundError(MESSAGE.PATH_NOT_FOUND));
