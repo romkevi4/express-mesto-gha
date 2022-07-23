@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const isURL = require('validator/lib/isURL');
 
-const { MESSAGE } = require('../utils/errorsInfo');
+const { MESSAGE } = require('../utils/responseInfo');
 
 // Схема для данных карточки
 const cardSchema = new mongoose.Schema({

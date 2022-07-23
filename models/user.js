@@ -4,7 +4,7 @@ const isEmail = require('validator/lib/isEmail');
 const isURL = require('validator/lib/isURL');
 
 const UnauthorizedError = require('../errors/unauthorizedErr');
-const { MESSAGE } = require('../utils/errorsInfo');
+const { MESSAGE } = require('../utils/responseInfo');
 
 // Схема для данных пользователя
 const userSchema = new mongoose.Schema({

@@ -14,6 +14,7 @@ module.exports.STATUS_CODE = {
 module.exports.MESSAGE = {
   USER_NOT_FOUND: 'Запрашиваемый пользователь не найден',
   USER_UNAUTHORIZED: 'Пользователь не авторизован',
+  USER_EXIT: 'Пользователь вышел из системы',
   ERROR_CREATE_USER: 'Переданные данные для создания нового пользователя не корректны',
   ERROR_UPDATE_USER: 'Переданные данные профиля пользователя не корректны',
   ERROR_UPDATE_AVATAR: 'Переданные данные аватара пользователя не корректны',
@@ -30,7 +31,7 @@ module.exports.MESSAGE = {
   URL_INCORRECT: 'Введенный url не корректен',
   SERVER_ERROR: 'На сервере произошла ошибка',
   DATA_UNAUTHORIZED: 'Введенные почта или пароль неправильные',
-  CORRECT: 'Все верно',
+  CORRECT: 'Всё верно',
 };
 
 // Код ошибки дублирования email в Mongo

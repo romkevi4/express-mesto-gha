@@ -1,8 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { celebrate, Joi, errors } = require('celebrate');
 const helmet = require('helmet');
+const cors = require('cors');
 
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
@@ -13,14 +15,17 @@ const { auth } = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { urlRegex } = require('./utils/urlRegex');
-const { STATUS_CODE, MESSAGE } = require('./utils/errorsInfo');
+const { STATUS_CODE, MESSAGE } = require('./utils/responseInfo');
 const NotFoundError = require('./errors/notFoundErr');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3001, MONGO_DB } = process.env;
+const { optionsCors } = require('./utils/optionsCors');
 
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/mestodb');
+app.use('*', cors(optionsCors));
+
+mongoose.connect(MONGO_DB);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

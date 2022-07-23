@@ -3,12 +3,14 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
+const { NODE_ENV, JWT_SECRET } = process.env;
+
 const {
   STATUS_CODE,
   MESSAGE,
   MONGO_CODE,
   SALT_HASH,
-} = require('../utils/errorsInfo');
+} = require('../utils/responseInfo');
 const BadRequestError = require('../errors/badRequestErr');
 const UnauthorizedError = require('../errors/unauthorizedErr');
 const NotFoundError = require('../errors/notFoundErr');
@@ -17,9 +19,7 @@ const ConflictError = require('../errors/conflictErr');
 // Возвращение всех пользователей
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => {
-      res.send({ users });
-    })
+    .then((users) => res.send({ users }))
     .catch(next);
 };
 
@@ -108,7 +108,7 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-// Проверка логина и пароля
+// Авторизация
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
@@ -116,7 +116,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        'some-secret-key',
+        NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key',
         { expiresIn: '7d' },
       );
 
@@ -124,12 +124,7 @@ module.exports.login = (req, res, next) => {
         throw new UnauthorizedError(MESSAGE.DATA_UNAUTHORIZED);
       }
 
-      res
-        .cookie('jwt', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-        })
-        .send({ token });
+      res.send({ token });
     })
     .catch(next);
 };

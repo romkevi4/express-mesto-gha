@@ -1,5 +1,5 @@
 const Card = require('../models/card');
-const { STATUS_CODE, MESSAGE } = require('../utils/errorsInfo');
+const { STATUS_CODE, MESSAGE } = require('../utils/responseInfo');
 const BadRequestError = require('../errors/badRequestErr');
 const ForbiddenError = require('../errors/forbiddenErr');
 const NotFoundError = require('../errors/notFoundErr');
@@ -36,11 +36,11 @@ module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   const { _id } = req.user;
 
-  Card.findOne({ cardId })
+  Card.findById(cardId)
     .then((card) => {
       if (!card || !cardId) {
         throw new NotFoundError(MESSAGE.CARD_NOT_FOUND);
-      } else if (_id === card.owner._id.toString()) {
+      } else if (_id === card.owner.toString()) {
         Card.findByIdAndDelete(cardId)
           .then(() => {
             res
