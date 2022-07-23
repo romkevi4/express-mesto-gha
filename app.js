@@ -18,7 +18,7 @@ const { urlRegex } = require('./utils/urlRegex');
 const { STATUS_CODE, MESSAGE } = require('./utils/responseInfo');
 const NotFoundError = require('./errors/notFoundErr');
 
-const { PORT = 3001, MONGO_DB } = process.env;
+const { PORT = 3001, MONGO_DB = 'mongodb://localhost:27017/mestodb' } = process.env;
 const { optionsCors } = require('./utils/optionsCors');
 
 const app = express();
