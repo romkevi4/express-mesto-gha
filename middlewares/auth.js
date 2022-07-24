@@ -4,7 +4,6 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 const { MESSAGE } = require('../utils/responseInfo');
 const UnauthorizedError = require('../errors/unauthorizedErr');
 
-// eslint-disable-next-line consistent-return
 module.exports.auth = (req, res, next) => {
   const { authorization } = req.headers;
 

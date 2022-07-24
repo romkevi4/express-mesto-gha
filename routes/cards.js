@@ -10,7 +10,7 @@ const {
 } = require('../controllers/cards');
 const { urlRegex } = require('../utils/urlRegex');
 
-// Роутинг данных карточки
+// Роутинг данных карточек
 router.get('/', getCards);
 
 router.post('/', celebrate({
